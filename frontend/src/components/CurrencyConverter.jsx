@@ -29,9 +29,16 @@ export default function CurrencyConverter() {
   const [toCurrency, setToCurrency] = useState("EUR");
   const [convertedAmount, setConvertedAmount] = useState(null);
   const [exchangeRate, setExchangeRate] = useState(null);
-
+  const [loader, setLodaer] = useState(false);
+  useEffect(() => {
+    // This effect triggers whenever fromCurrency or toCurrency changes
+    // It clears the convertedAmount and exchangeRate if either changes
+    setConvertedAmount(null);
+    setExchangeRate(null);
+  }, [fromCurrency, toCurrency]);
   async function handleConverter() {
     try {
+      setLodaer(true);
       let data = {
         baseCurrency: fromCurrency,
         targetCurrency: toCurrency,
@@ -45,6 +52,7 @@ export default function CurrencyConverter() {
       const responseData = response.data.data;
       setConvertedAmount(responseData.conversion_result);
       setExchangeRate(responseData.conversion_rate);
+      setLodaer(false);
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +71,9 @@ export default function CurrencyConverter() {
           type="number"
           id="amount"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => {
+            setAmount(e.target.value);
+          }}
           className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
       </div>
@@ -76,7 +86,9 @@ export default function CurrencyConverter() {
 
           <select
             value={fromCurrency}
-            onChange={(e) => setFromCurrency(e.target.value)}
+            onChange={(e) => {
+              setFromCurrency(e.target.value);
+            }}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
             {popularCurrencyCodes.map((code) => (
@@ -106,7 +118,9 @@ export default function CurrencyConverter() {
       </div>
       <center>
         <div className=" flex items-center justify-center mt-10 border-2 rounded-full bg-blue-400 hover:bg-blue-200 cursor-pointer w-[160px] p-1">
-          <button onClick={handleConverter}>Convert</button>
+          <button onClick={handleConverter}>
+            {loader ? "......." : "Convert"}
+          </button>
         </div>
       </center>
 
